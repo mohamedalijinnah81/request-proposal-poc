@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
+function stripMarkdown(text: string) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "$1") // bold
+    .replace(/\*(.*?)\*/g, "$1")     // italics
+    .replace(/#+\s/g, "")            // headings
+    .replace(/-\s/g, "")             // bullet points
+    .replace(/\d+\.\s/g, "")         // numbered lists
+    .trim();
+}
+
 export async function POST(request: NextRequest) {
   const session = await getSession();
 
@@ -61,6 +71,7 @@ Return ONLY valid JSON.`;
     let suggestion;
     try {
       suggestion = JSON.parse(text);
+      suggestion.message = stripMarkdown(suggestion.message);
     } catch {
       suggestion = {
         subject: `Proposal for: ${requestTitle}`,
