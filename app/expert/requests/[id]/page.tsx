@@ -9,6 +9,7 @@ export default function ExpertRequestDetail() {
   const { id } = useParams();
   const [request, setRequest] = useState<any>(null);
   const [proposal, setProposal] = useState<any>(null);
+  const [tokenUsage, setTokenUsage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -70,6 +71,10 @@ export default function ExpertRequestDetail() {
           price: data.data.price || form.price,
           attachmentName: data.data.attachmentName || form.attachmentName,
         });
+
+        // ✅ store token usage
+        setTokenUsage(data.tokenUsage);
+
         setMessage({ type: "success", text: "AI draft generated! Review and adjust before submitting." });
       }
     } catch {
@@ -196,6 +201,26 @@ export default function ExpertRequestDetail() {
                 message.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-red-50 border-red-200 text-red-700"
               }`}>
                 {message.text}
+              </div>
+            )}
+
+            {tokenUsage && (
+              <div className="mb-4 p-4 rounded-xl border border-slate-200 bg-slate-50 text-sm">
+                <div className="font-semibold text-slate-700 mb-2">AI Usage</div>
+
+                <div className="grid grid-cols-2 gap-2 text-slate-600">
+                  <div>Prompt Tokens:</div>
+                  <div className="font-medium">{tokenUsage.prompt_tokens}</div>
+
+                  <div>Completion Tokens:</div>
+                  <div className="font-medium">{tokenUsage.completion_tokens}</div>
+
+                  <div>Total Tokens:</div>
+                  <div className="font-semibold text-slate-800">{tokenUsage.total_tokens}</div>
+
+                  <div>Approx Tokens:</div>
+                  <div className="text-slate-500">{tokenUsage.approxTokens}</div>
+                </div>
               </div>
             )}
 
